@@ -141,7 +141,7 @@ function Accounts(){
 
     return(
     <div>
-    <ScrollArea className="h-50 w-70 rounded-md border">
+    <ScrollArea className="h-[16vh] w-70 rounded-md border">
 
     <Table >
 

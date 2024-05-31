@@ -8,18 +8,18 @@ import Categories from './mycomp/category'
 function App() {
 
   return (
-    <>
-    <div className='flex flex-row  justify-around' >
+    <div className='mineouter'>
+    <div className='flex flex-row  justify-around mineinner' >
       <Expense/>
       <Income/>
-      <div>
+      <div className='mineinner2'> 
       <Accounts/>
       <Categories/>
       </div>
       
     </div>
     <List/>
-    </>
+    </div>
   )
 }
 
