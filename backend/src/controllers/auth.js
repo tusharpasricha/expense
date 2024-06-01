@@ -1,6 +1,8 @@
 const Sources = require('../models/sources')
 const Income = require('../models/income')
 const Category = require('../models/category')
+const Expense = require('../models/expense');
+
 
 exports.addSource =(req,res,next)=>{
     let {source,amount} = req.body;
@@ -240,6 +242,60 @@ exports.getAllCategories = ('/getAllCategories',async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching categories:', error);
+    res.status(500).json({
+      errors: [{ error: 'Internal Server Error' }],
+    });
+  }
+});
+
+
+//-----------------------expense
+
+exports.addExpense = ('/addExpense', (req, res, next) => {
+  const { sourceId, categoryId, amount, date } = req.body;
+
+  const expense = new Expense({
+    source: sourceId,
+    category: categoryId,
+    amount: parseFloat(amount),
+    date: new Date(date),
+  });
+  console.log(expense)
+
+  expense.save()
+    .then((savedExpense) => {
+      // Optionally update the source with the new expense amount if needed
+      Sources.findByIdAndUpdate(sourceId, { $inc: { amount: -parseFloat(amount) } })
+        .then(() => {
+          res.status(200).json({
+            success: true,
+            savedExpense: savedExpense,
+          });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            success: false,
+            errors: [{ error: err }],
+          });
+        });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        errors: [{ error: err }],
+      });
+    });
+});
+
+exports.getAllExpenses = ('/getAllExpenses', async (req, res) => {
+  try {
+    const allExpenses = await Expense.find().populate('source category');
+    res.status(200).json({
+      success: true,
+      allExpenses: allExpenses,
+    });
+  } catch (error) {
+    console.error('Error fetching expenses:', error);
     res.status(500).json({
       errors: [{ error: 'Internal Server Error' }],
     });

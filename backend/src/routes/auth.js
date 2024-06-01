@@ -2,6 +2,8 @@ const express = require('express');
 const { addSource, getAllSources ,deleteSource, editSource } = require('../controllers/auth');
 const { addIncome, getAllIncomes} = require('../controllers/auth');
 const { addCategory, getAllCategories ,deleteCategory, editCategory } = require('../controllers/auth');
+const { addExpense, getAllExpenses} = require('../controllers/auth');
+
 
 const router = express.Router();
 
@@ -24,6 +26,9 @@ router.post('/addCategory',addCategory)
 router.get('/getAllCategories',getAllCategories)
 router.delete('/deleteCategory/:id',deleteCategory)
 router.put('/editCategory/:id',editCategory)
+
+router.post('/addExpense',addExpense)
+router.get('/getAllExpenses' ,getAllExpenses)
 
 
 module.exports = router;
