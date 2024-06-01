@@ -181,7 +181,8 @@ exports.addCategory = ('/addCategory',async (req, res) => {
 exports.deleteCategory = ('deleteCategory/:id',async (req, res) => {
   console.log('here')
   try {
-    const categoryId = req.params.categoryId;
+    const categoryId = req.params.id;
+    console.log(categoryId)
     const deletedCategory = await Category.findByIdAndDelete(categoryId);
     if (!deletedCategory) {
       res.status(404).json({
@@ -204,7 +205,7 @@ exports.deleteCategory = ('deleteCategory/:id',async (req, res) => {
 
 exports.editCategory = ('/editCategory/:id',async (req, res) => {
   try {
-    const categoryId = req.params.categoryId;
+    const categoryId = req.params.id;
     const { category } = req.body;
     const updatedCategory = await Category.findByIdAndUpdate(
       categoryId,

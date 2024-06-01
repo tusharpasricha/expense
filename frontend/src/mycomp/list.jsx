@@ -2,6 +2,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { format } from 'date-fns';
 
 import { useEffect , useState } from "react";
+import PropTypes from "prop-types";
+
 
 import {
     Table,
@@ -16,18 +18,18 @@ import {
 
   
 
-function List(){
-    const [incomes, setIncomes] = useState([]);
+function List({ incomes }){
+    // const [incomes, setIncomes] = useState([]);
 
-    useEffect(() => {
-      // Fetch income data from the backend
-      fetch("http://localhost:3000/api/getAllIncomes")
-        .then((response) => response.json())
-        .then((data) => {
-          setIncomes(data.allIncomes);
-        })
-        .catch((error) => console.error("Error fetching incomes:", error));
-    }, []);
+    // useEffect(() => {
+    //   // Fetch income data from the backend
+    //   fetch("http://localhost:3000/api/getAllIncomes")
+    //     .then((response) => response.json())
+    //     .then((data) => {
+    //       setIncomes(data.allIncomes);
+    //     })
+    //     .catch((error) => console.error("Error fetching incomes:", error));
+    // }, []);
     
     return(<>
    <ScrollArea className="h-72 w-480 rounded-md border">
@@ -56,5 +58,7 @@ function List(){
     </ScrollArea>
     </>)
 }
-
+List.propTypes = {
+  incomes: PropTypes.func.isRequired,
+};
 export default List
