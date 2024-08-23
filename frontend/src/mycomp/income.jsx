@@ -34,6 +34,7 @@ function Income({ onIncomeSaved }) {
   const [sources, setSources] = useState([]);
   const [selectedSource, setSelectedSource] = useState('');
   const [amount, setAmount] = useState("");
+  const [errorMsg,setErrorMsg] = useState("");
 
   useEffect(() => {
     fetch('http://localhost:3000/api/getAllSources')
@@ -45,6 +46,12 @@ function Income({ onIncomeSaved }) {
   }, []);
 
   const handleSave = () => {
+    if (!selectedSource || !amount || !date){
+      setErrorMsg('Fill out all the fields');
+      return;
+    }
+    setErrorMsg('');
+    
     if (selectedSource && amount && date) {
       fetch('http://localhost:3000/api/addIncome', {
         method: 'POST',
@@ -123,6 +130,9 @@ function Income({ onIncomeSaved }) {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
+      </CardContent>
+      <CardContent>
+        <p className="text-red-600">{errorMsg}</p>
       </CardContent>
       <CardFooter>
         <Button onClick={handleSave}>Save</Button>

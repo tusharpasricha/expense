@@ -3,6 +3,75 @@ const Income = require('../models/income')
 const Category = require('../models/category')
 const Expense = require('../models/expense');
 
+// Get incomes by year
+exports.getIncomesByYear = async (req, res) => {
+  const { year } = req.query;
+
+  try {
+      // Validate and convert year to a number
+      if (!year || isNaN(year)) {
+          return res.status(400).json({ error: 'Invalid year parameter' });
+      }
+      const yearInt = parseInt(year, 10);
+
+      // Calculate the start and end dates for the year
+      const startDate = new Date(yearInt, 0, 1); // January 1st of the year
+      const endDate = new Date(yearInt + 1, 0, 1); // January 1st of the next year
+
+      // Log dates for debugging
+      console.log('Start Date:', startDate);
+      console.log('End Date:', endDate);
+
+      // Fetch incomes within the date range
+      const incomes = await Income.find({
+          date: {
+              $gte: startDate,
+              $lt: endDate
+          }
+      }).populate('source');
+
+      res.status(200).json(incomes);
+  } catch (error) {
+      console.error('Error fetching incomes by year:', error);
+      res.status(500).json({ error: error.message });
+  }
+};
+
+
+// Get expenses by year
+exports.getExpensesByYear = async (req, res) => {
+  const { year } = req.query;
+
+  try {
+      // Convert year to a number
+      const yearInt = parseInt(year);
+
+      // Calculate the start and end dates for the year
+      const startDate = new Date(yearInt, 0, 1); // January 1st of the year
+      const endDate = new Date(yearInt + 1, 0, 1); // January 1st of the next year
+
+      // Fetch expenses within the date range
+      const expenses = await Expense.find({
+          date: {
+              $gte: startDate,
+              $lt: endDate
+          }
+      })
+      .populate('source')  // Populate source details
+      .populate('category');  // Populate category details
+
+      res.status(200).json(expenses);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+
+
+// ----------------source
+
 
 exports.addSource =(req,res,next)=>{
     let {source,amount} = req.body;

@@ -3,6 +3,7 @@ const { addSource, getAllSources ,deleteSource, editSource } = require('../contr
 const { addIncome, getAllIncomes} = require('../controllers/auth');
 const { addCategory, getAllCategories ,deleteCategory, editCategory } = require('../controllers/auth');
 const { addExpense, getAllExpenses} = require('../controllers/auth');
+const { getIncomesByYear, getExpensesByYear} = require('../controllers/auth');
 
 
 const router = express.Router();
@@ -13,6 +14,8 @@ router.get('/',(req,res)=>{
         result: "working"
     })
 })
+router.get('/incomes', getIncomesByYear);
+router.get('/expenses', getExpensesByYear);
 
 router.post('/addSource',addSource)
 router.get('/getAllSources',getAllSources)

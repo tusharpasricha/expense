@@ -40,6 +40,7 @@ function Expense({ onExpenseSaved }) {
   const [selectedSource, setSelectedSource] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [amount, setAmount] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:3000/api/getAllSources')
@@ -60,6 +61,12 @@ function Expense({ onExpenseSaved }) {
   }, []);
 
   const handleSave = () => {
+    if(!selectedCategory || !selectedSource || !amount || !date){
+      setErrorMsg('Fill out all the fields');
+
+      return;
+    }
+    setErrorMsg('')
     if (selectedSource && selectedCategory && amount && date) {
       fetch('http://localhost:3000/api/addExpense', {
         method: 'POST',
@@ -77,6 +84,10 @@ function Expense({ onExpenseSaved }) {
         .then((data) => {
           if (data.success) {
             onExpenseSaved(data.savedExpense); // Call the callback to update the list
+            setDate(null);
+            setSelectedSource('');
+            setSelectedCategory('');
+            setAmount('');
           } else {
             console.error('Error adding expense:', data.errors);
           }
@@ -149,6 +160,9 @@ function Expense({ onExpenseSaved }) {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
+      </CardContent>
+      <CardContent>
+        <p className="text-red-500">{errorMsg}</p>
       </CardContent>
       <CardFooter>
         <Button onClick={handleSave}>Save</Button>

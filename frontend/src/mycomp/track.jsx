@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"
 import {
     Drawer,
     DrawerClose,
@@ -15,12 +16,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -32,10 +31,46 @@ import { Separator } from "@/components/ui/separator"
 
 
 
-
-
-
 function Track() {
+    const [selectedYear, setSelectedYear] = useState('2024');
+    const [incomeData, setIncomeData] = useState([]);
+    const [expenseData, setExpenseData] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+
+                const incomeResponse = await fetch(`http://localhost:3000/api/incomes?year=${selectedYear}`);
+                if (!incomeResponse.ok) {
+                    throw new Error('Network response for income was not ok');
+                }
+                const incomeData = await incomeResponse.json();
+                setIncomeData(incomeData);
+
+                const expenseResponse = await fetch(`http://localhost:3000/api/expenses?year=${selectedYear}`);
+                if (!expenseResponse.ok) {
+                    throw new Error('Network response for expense was not ok');
+                }
+                const expenseData = await expenseResponse.json();
+                setExpenseData(expenseData);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+
+
+        fetchData();
+    }, [selectedYear]);
+
+    const handleYearChange = (value) => {
+        setSelectedYear(value);
+    };
+
+
+
+
     return (
         <Drawer>
             <DrawerTrigger className="text-white dark:text-gray-300">Open</DrawerTrigger>
@@ -43,14 +78,14 @@ function Track() {
                 <DrawerHeader className="mb-10">
                     <DrawerTitle className="text-black dark:text-white">Expense report for</DrawerTitle>
                     <DrawerDescription className="text-gray-700 dark:text-gray-400">
-                        <Select>
+                        <Select onValueChange={handleYearChange} >
                             <SelectTrigger className="w-[180px]">
                                 <SelectValue placeholder="Year" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="light">2024</SelectItem>
-                                <SelectItem value="dark">2023</SelectItem>
-                                <SelectItem value="system">2022</SelectItem>
+                                <SelectItem value="2024">2024</SelectItem>
+                                <SelectItem value="2023">2023</SelectItem>
+                                <SelectItem value="2022">2022</SelectItem>
                             </SelectContent>
                         </Select>
                         <Table>
@@ -64,13 +99,13 @@ function Track() {
                             <TableBody>
                                 <TableRow>
                                     <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
+                                    <TableCell className="text-right">${incomeData.reduce((acc, item) => acc + item.amount, 0).toFixed(2)}</TableCell>
                                 </TableRow>
                             </TableBody>
                             <TableBody>
                                 <TableRow>
                                     <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
+                                    <TableCell className="text-right">${expenseData.reduce((acc, item) => acc + item.amount, 0).toFixed(2)}</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
@@ -79,301 +114,7 @@ function Track() {
                     <Separator />
 
                 </DrawerHeader>
-                <Tabs defaultValue="account" className="w-[400px]">
-                    <TabsList>
-                        <TabsTrigger value="jan">Jan</TabsTrigger>
-                        <TabsTrigger value="feb">Feb</TabsTrigger>
-                        <TabsTrigger value="mar">Mar</TabsTrigger>
-                        <TabsTrigger value="apr">Apr</TabsTrigger>
-                        <TabsTrigger value="may">May</TabsTrigger>
-                        <TabsTrigger value="jun">Jun</TabsTrigger>
-                        <TabsTrigger value="jul">Jul</TabsTrigger>
-                        <TabsTrigger value="aug">Aug</TabsTrigger>
-                        <TabsTrigger value="sep">Sep</TabsTrigger>
-                        <TabsTrigger value="oct">Oct</TabsTrigger>
-                        <TabsTrigger value="nov">Nov</TabsTrigger>
-                        <TabsTrigger value="dec">Dec</TabsTrigger>
 
-
-
-                    </TabsList>
-                    <TabsContent value="jan">
-                        <Table>
-                            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Item</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TabsContent>
-                    <TabsContent value="feb">
-                        <Table>
-                            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Item</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TabsContent>
-                    <TabsContent value="mar">
-                        <Table>
-                            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Item</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TabsContent>
-                    <TabsContent value="apr">
-                        <Table>
-                            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Item</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TabsContent>
-                    <TabsContent value="may">
-                        <Table>
-                            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Item</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TabsContent>
-                    <TabsContent value="jun">
-                        <Table>
-                            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Item</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TabsContent>
-                    <TabsContent value="jul">
-                        <Table>
-                            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Item</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TabsContent>
-                    <TabsContent value="aug">
-                        <Table>
-                            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Item</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TabsContent>
-                    <TabsContent value="sep">
-                        <Table>
-                            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Item</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TabsContent>
-                    <TabsContent value="oct">
-                        <Table>
-                            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Item</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TabsContent>
-                    <TabsContent value="nov">
-                        <Table>
-                            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Item</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TabsContent>
-                    <TabsContent value="dec">
-                        <Table>
-                            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Item</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Income</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="font-medium">Expense</TableCell>
-                                    <TableCell className="text-right">$250.00</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TabsContent>
-                </Tabs>
 
                 <Separator />
 
@@ -407,27 +148,7 @@ function Track() {
                             </Table>
 
                         </TabsContent>
-                        <TabsContent value="category">
-                            <Table>
-                                {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="w-[100px]">Category</TableHead>
-                                        {/* <TableHead>Status</TableHead>
-                                <TableHead>Method</TableHead> */}
-                                        <TableHead className="text-right">Amount</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    <TableRow>
-                                        <TableCell className="font-medium">Transporation</TableCell>
-                                        {/* <TableCell>Paid</TableCell>
-                                <TableCell>Credit Card</TableCell> */}
-                                        <TableCell className="text-right">$250.00</TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </TabsContent>
+
                     </Tabs>
 
 
@@ -446,3 +167,5 @@ function Track() {
 }
 
 export default Track
+
+
