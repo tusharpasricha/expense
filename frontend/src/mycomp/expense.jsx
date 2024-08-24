@@ -43,7 +43,12 @@ function Expense({ onExpenseSaved }) {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/getAllSources')
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:3000/api/getAllSources',{
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(response => response.json())
       .then(data => {
         setSources(data.allSources);
@@ -52,7 +57,13 @@ function Expense({ onExpenseSaved }) {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/getAllCategories")
+    const token = localStorage.getItem('token');
+    console.log('token inside expense',token);
+    fetch("http://localhost:3000/api/getAllCategories",{
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    })
       .then((response) => response.json())
       .then((data) => {
         setCategories(data.allCategories);
@@ -61,6 +72,7 @@ function Expense({ onExpenseSaved }) {
   }, []);
 
   const handleSave = () => {
+    const token = localStorage.getItem('token')
     if(!selectedCategory || !selectedSource || !amount || !date){
       setErrorMsg('Fill out all the fields');
 
@@ -72,6 +84,7 @@ function Expense({ onExpenseSaved }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           sourceId: selectedSource,

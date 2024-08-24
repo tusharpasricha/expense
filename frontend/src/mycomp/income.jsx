@@ -37,7 +37,12 @@ function Income({ onIncomeSaved }) {
   const [errorMsg,setErrorMsg] = useState("");
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/getAllSources')
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:3000/api/getAllSources',{
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    })
       .then(response => response.json())
       .then(data => {
         setSources(data.allSources);
@@ -46,6 +51,7 @@ function Income({ onIncomeSaved }) {
   }, []);
 
   const handleSave = () => {
+    const token = localStorage.getItem('token')
     if (!selectedSource || !amount || !date){
       setErrorMsg('Fill out all the fields');
       return;
@@ -57,6 +63,7 @@ function Income({ onIncomeSaved }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           sourceId: selectedSource,

@@ -43,10 +43,12 @@ function Categories() {
 
   const handleAddCategory = () => {
     if (newCategory.category) {
+      const token = localStorage.getItem('token');
       fetch("http://localhost:3000/api/addCategory", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           category: newCategory.category,
@@ -63,10 +65,14 @@ function Categories() {
 
   const handleDeleteCategory = (index) => {
     const categoryToDelete = categories[index];
+    const token = localStorage.getItem('token');
     console.log("Deleting category ID:", categoryToDelete._id); // Logging the ID
 
     fetch(`http://localhost:3000/api/deleteCategory/${categoryToDelete._id}`, {
       method: "DELETE",
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
     })
       .then((response) => response.json())
       .then((data) => {
@@ -88,12 +94,14 @@ function Categories() {
   };
 
   const handleSaveEdit = () => {
+    const token = localStorage.getItem('token');
     console.log("Editing category ID:", editCategory._id); // Logging the ID
 
     fetch(`http://localhost:3000/api/editCategory/${editCategory._id}`, {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
         category: editCategory.category,
@@ -115,7 +123,12 @@ function Categories() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/getAllCategories")
+    const token = localStorage.getItem('token')
+    fetch("http://localhost:3000/api/getAllCategories",{
+      headers:{
+        'Authorization':`Bearer ${token}`
+      }
+    })
       .then((response) => response.json())
       .then((data) => {
         setCategories(data.allCategories);

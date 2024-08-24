@@ -49,11 +49,13 @@ function Accounts(){
     const handleAddSource = () => {
         // Validate that both source name and amount are provided
         if (newSource.source && newSource.amount) {
+          const token = localStorage.getItem('token');
           // Make a POST request to your backend route
           fetch('http://localhost:3000/api/addSource', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
               source: newSource.source,
@@ -75,10 +77,15 @@ function Accounts(){
         // Assuming sources[index] contains the details of the source to be deleted
         const sourceToDelete = sources[index];
         console.log(sourceToDelete._id)
+        const token = localStorage.getItem('token');
       
         // Make a DELETE request to your backend route
         fetch(`http://localhost:3000/api/deleteSource/${sourceToDelete._id}`, {
           method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
         })
           .then(response => response.json())
           .then(data => {
@@ -98,10 +105,12 @@ function Accounts(){
         setEditSource({ ...sourceToEdit });
       };
       const handleSaveEdit = () => {
+        const token = localStorage.getItem('token');
         fetch(`http://localhost:3000/api/editSource/${editSource._id}`, {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({
             source: editSource.source,
@@ -129,7 +138,12 @@ function Accounts(){
       
     useEffect(() => {
         // Fetch data from the backend when the component mounts
-        fetch('http://localhost:3000/api/getAllSources')
+        const token = localStorage.getItem('token');
+        fetch('http://localhost:3000/api/getAllSources',{
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
           .then(response => response.json())
           .then(data => {
             console.log(data.allSources)

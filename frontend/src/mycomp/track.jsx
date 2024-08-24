@@ -37,17 +37,26 @@ function Track() {
     const [expenseData, setExpenseData] = useState([]);
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
         const fetchData = async () => {
             try {
 
-                const incomeResponse = await fetch(`http://localhost:3000/api/incomes?year=${selectedYear}`);
+                const incomeResponse = await fetch(`http://localhost:3000/api/incomes?year=${selectedYear}`,{
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                });
                 if (!incomeResponse.ok) {
                     throw new Error('Network response for income was not ok');
                 }
                 const incomeData = await incomeResponse.json();
                 setIncomeData(incomeData);
 
-                const expenseResponse = await fetch(`http://localhost:3000/api/expenses?year=${selectedYear}`);
+                const expenseResponse = await fetch(`http://localhost:3000/api/expenses?year=${selectedYear}`,{
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                });
                 if (!expenseResponse.ok) {
                     throw new Error('Network response for expense was not ok');
                 }
