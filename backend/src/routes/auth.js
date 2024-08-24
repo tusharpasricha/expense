@@ -4,9 +4,12 @@ const { addIncome, getAllIncomes} = require('../controllers/auth');
 const { addCategory, getAllCategories ,deleteCategory, editCategory } = require('../controllers/auth');
 const { addExpense, getAllExpenses} = require('../controllers/auth');
 const { getIncomesByYear, getExpensesByYear} = require('../controllers/auth');
+const { logIn, signUp,profile} = require('../controllers/auth');
 
 
 const router = express.Router();
+const auth = require('../middleware/auth');
+
 
 router.get('/',(req,res)=>{
     res.status(200).json({
@@ -14,24 +17,32 @@ router.get('/',(req,res)=>{
         result: "working"
     })
 })
-router.get('/incomes', getIncomesByYear);
-router.get('/expenses', getExpensesByYear);
 
-router.post('/addSource',addSource)
-router.get('/getAllSources',getAllSources)
-router.delete('/deleteSource/:id',deleteSource)
-router.put('/editSource/:id',editSource)
 
-router.post('/addIncome',addIncome)
-router.get('/getAllIncomes' ,getAllIncomes)
+// router.use(auth); 
 
-router.post('/addCategory',addCategory)
-router.get('/getAllCategories',getAllCategories)
-router.delete('/deleteCategory/:id',deleteCategory)
-router.put('/editCategory/:id',editCategory)
+router.post('/logIn',logIn);
+router.post('/signUp',signUp);
+router.get('/profile',profile)
 
-router.post('/addExpense',addExpense)
-router.get('/getAllExpenses' ,getAllExpenses)
+router.get('/incomes',auth, getIncomesByYear);
+router.get('/expenses',auth, getExpensesByYear);
+
+router.post('/addSource',auth,addSource)
+router.get('/getAllSources',auth,getAllSources)
+router.delete('/deleteSource/:id',auth,deleteSource)
+router.put('/editSource/:id',auth,editSource)
+
+router.post('/addIncome',auth,addIncome)
+router.get('/getAllIncomes' ,auth,getAllIncomes)
+
+router.post('/addCategory',auth,addCategory)
+router.get('/getAllCategories',auth,getAllCategories)
+router.delete('/deleteCategory/:id',auth,deleteCategory)
+router.put('/editCategory/:id',auth,editCategory)
+
+router.post('/addExpense',auth,addExpense)
+router.get('/getAllExpenses' ,auth,getAllExpenses)
 
 
 module.exports = router;

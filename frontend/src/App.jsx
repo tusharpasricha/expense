@@ -17,7 +17,6 @@ function MainPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const username = location?.state?.username;
   const isLoggedIn = location?.state?.isLoggedIn;
 
   useEffect(() => {
@@ -57,7 +56,6 @@ function MainPage() {
   return (
     <>
       <Head />
-      <Track />
       <div className='flex flex-row justify-around mineinner'>
         <Expense onExpenseSaved={handleExpenseSaved} />
         <Income onIncomeSaved={handleIncomeSaved} />
@@ -66,6 +64,8 @@ function MainPage() {
           <Categories />
         </div>
       </div>
+      <Track />
+
       <List incomes={incomes} expenses={expenses} />
     </>
   );

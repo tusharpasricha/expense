@@ -9,6 +9,11 @@ let sourcesSchema = new Schema({
     amount: {
         type:Number,
         required:true
+    },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 
 })
@@ -16,4 +21,5 @@ mongoose.model('Source', sourcesSchema);
 
 
 module.exports = mongoose.model('Sources',sourcesSchema)
+
 

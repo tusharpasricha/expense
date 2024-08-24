@@ -11,11 +11,6 @@ import { Button } from "@/components/ui/button"
 import { useNavigate, useLocation } from "react-router-dom";
 
 
-
-
-
-
-
 function Head() {
    
 
@@ -31,9 +26,8 @@ function Head() {
     };
     
     return (
-        <div className="ml-20 mr-10 flex text-7xl justify-between items-center">
+        <div className="ml-20 mr-10 flex text-7xl justify-between items-center ">
             Expense Tracker
-
 
             <Sheet>
                 <SheetTrigger>
@@ -46,18 +40,16 @@ function Head() {
                     <SheetHeader>
                         <SheetTitle>{username}</SheetTitle>
                         <SheetDescription>
-                            Switch Accounts
+                            
                         </SheetDescription>
                     </SheetHeader>
                     <div className="mt-4">
             <Button variant="destructive" onClick={handleLogout}>
               Logout
             </Button>
-          </div>
+                    </div>
                 </SheetContent>
             </Sheet>
-
-
 
         </div>
 

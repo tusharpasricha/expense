@@ -27,7 +27,16 @@ import {
 } from "@/components/ui/table"
 
 import { Separator } from "@/components/ui/separator"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+  } from "@/components/ui/tooltip"
 
+  import { Button } from "@/components/ui/button"
+
+  
 
 
 
@@ -82,7 +91,19 @@ function Track() {
 
     return (
         <Drawer>
-            <DrawerTrigger className="text-white dark:text-gray-300">Open</DrawerTrigger>
+            <DrawerTrigger className="text-white dark:text-gray-300">
+            <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger>
+                <Button >Analyze</Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                <p>Open the tracker to analyze monthly and yearly expenses</p>
+                </TooltipContent>
+            </Tooltip>
+            </TooltipProvider>
+
+            </DrawerTrigger>
             <DrawerContent className="flex items-center bg-white dark:bg-gray-800 text-black dark:text-gray-300">
                 <DrawerHeader className="mb-10">
                     <DrawerTitle className="text-black dark:text-white">Expense report for</DrawerTitle>

@@ -1,372 +1,437 @@
-const Sources = require('../models/sources')
-const Income = require('../models/income')
-const Category = require('../models/category')
-const Expense = require('../models/expense');
+const Sources = require("../models/sources");
+const Income = require("../models/income");
+const Category = require("../models/category");
+const Expense = require("../models/expense");
+const User = require("../models/user");
 
-// Get incomes by year
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+//-------------------------------------------------------------------------------------------------------------
+exports.signUp = async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ username, password: hashedPassword });
+    await user.save();
+    res.status(201).send("User Registered");
+  } catch (error) {
+    console.error("Error hashing password:", error);
+    res.status(500).send("Error registering user");
+  }
+};
+exports.logIn = async (req, res) => {
+  const { username, password } = req.body;
+  console.log('user logged in',username);
+  const user = await User.findOne({ username });
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(401).send("Invalid credentials");
+  }
+  const token = jwt.sign({ id: user._id }, "your_jwt_secret", {
+    expiresIn: "1h",
+  });
+  console.log('token to be send',token);
+  res.json({ token });
+};
+
+exports.profile = async (req, res) => {
+  res.json({ message: "This is protected data", user: req.user });
+};
+//-------------------------------------------------------------------------------------------------------------
+
 exports.getIncomesByYear = async (req, res) => {
   const { year } = req.query;
+  const userId = req.user.id;
 
   try {
-      // Validate and convert year to a number
-      if (!year || isNaN(year)) {
-          return res.status(400).json({ error: 'Invalid year parameter' });
-      }
-      const yearInt = parseInt(year, 10);
+    if (!year || isNaN(year)) {
+      return res.status(400).json({ error: "Invalid year parameter" });
+    }
+    const yearInt = parseInt(year, 10);
 
-      // Calculate the start and end dates for the year
-      const startDate = new Date(yearInt, 0, 1); // January 1st of the year
-      const endDate = new Date(yearInt + 1, 0, 1); // January 1st of the next year
+    const startDate = new Date(yearInt, 0, 1); // January 1st of the year
+    const endDate = new Date(yearInt + 1, 0, 1); // January 1st of the next year
 
-      // Log dates for debugging
-      console.log('Start Date:', startDate);
-      console.log('End Date:', endDate);
+    const incomes = await Income.find({
+      date: {
+        $gte: startDate,
+        $lt: endDate,
+      },
+      user: userId,
+    }).populate("source");
 
-      // Fetch incomes within the date range
-      const incomes = await Income.find({
-          date: {
-              $gte: startDate,
-              $lt: endDate
-          }
-      }).populate('source');
-
-      res.status(200).json(incomes);
+    res.status(200).json(incomes);
   } catch (error) {
-      console.error('Error fetching incomes by year:', error);
-      res.status(500).json({ error: error.message });
+    console.error("Error fetching incomes by year:", error);
+    res.status(500).json({ error: error.message });
   }
 };
 
-
-// Get expenses by year
 exports.getExpensesByYear = async (req, res) => {
   const { year } = req.query;
+  const userId = req.user.id;
 
   try {
-      // Convert year to a number
-      const yearInt = parseInt(year);
+    const yearInt = parseInt(year);
 
-      // Calculate the start and end dates for the year
-      const startDate = new Date(yearInt, 0, 1); // January 1st of the year
-      const endDate = new Date(yearInt + 1, 0, 1); // January 1st of the next year
+    const startDate = new Date(yearInt, 0, 1); // January 1st of the year
+    const endDate = new Date(yearInt + 1, 0, 1); // January 1st of the next year
 
-      // Fetch expenses within the date range
-      const expenses = await Expense.find({
-          date: {
-              $gte: startDate,
-              $lt: endDate
-          }
-      })
-      .populate('source')  // Populate source details
-      .populate('category');  // Populate category details
-
-      res.status(200).json(expenses);
+    const expenses = await Expense.find({
+      date: {
+        $gte: startDate,
+        $lt: endDate,
+      },
+      user: userId,
+    })
+      .populate("source")
+      .populate("category");
+    res.status(200).json(expenses);
   } catch (error) {
-      res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
+//-------------------------------------------------------------------------------------------------------------
 
+exports.addSource = (req, res, next) => {
+  let { source, amount } = req.body;
+  const userId = req.user.id;
 
+  const newSource = new Sources({
+    source: source,
+    amount: amount,
+    user: userId,
+  });
 
-
-
-// ----------------source
-
-
-exports.addSource =(req,res,next)=>{
-    let {source,amount} = req.body;
-
-    const newSource = new Sources({
-        source:source,
-        amount:amount
-    })
-
-    newSource.save()
-    .then(response=>{
-        res.status(200).json({
-            success:true,
-            result:response
-        })
-    })
-    .catch(err=>{
-        res.status(500).json({
-            errors:[{error:err}]
-        })
-    })
-}
-
-exports.getAllSources = (req,res,next)=>{
-    Sources.find()
-    .then(allSources => {
+  newSource
+    .save()
+    .then((response) => {
       res.status(200).json({
         success: true,
-        allSources: allSources
-      });
-    })
-    .catch(err => {
-      res.status(500).json({
-        errors: [{ error: err }]
-      });
-    });
-}
-
-exports.deleteSource = ('/deleteSource/:id', (req, res, next) => {
-  const sourceId = req.params.id;
-  console.log(sourceId)
-
-  // Find and remove the source by ID
-  Sources.findByIdAndDelete(sourceId)
-    .then((deletedSource) => {
-      if (!deletedSource) {
-        return res.status(404).json({
-          success: false,
-          errors: [{ message: 'Source not found' }],
-        });
-      }
-
-      res.status(200).json({
-        success: true,
-        message: 'Source deleted successfully',
-        deletedSource: deletedSource,
+        result: response,
       });
     })
     .catch((err) => {
       res.status(500).json({
-        success: false,
         errors: [{ error: err }],
       });
     });
-});
+};
 
-// Update a source by ID
-exports.editSource = ('/editSource/:id', (req, res, next) => {
-  const sourceId = req.params.id;
-  const { source, amount } = req.body;
-
-  // Validate that both source name and amount are provided
-  if (!source || !amount) {
-    return res.status(400).json({
-      success: false,
-      errors: [{ message: 'Source name and amount are required' }],
-    });
-  }
-
-  // Find and update the source by ID
-  Sources.findByIdAndUpdate(
-    sourceId,
-    { source: source, amount: amount },
-    { new: true }
-  )
-    .then((updatedSource) => {
-      if (!updatedSource) {
-        return res.status(404).json({
-          success: false,
-          errors: [{ message: 'Source not found' }],
-        });
-      }
-
+exports.getAllSources = (req, res, next) => {
+  const userId = req.user.id;
+  Sources.find({ user: userId })
+    .then((allSources) => {
       res.status(200).json({
         success: true,
-        message: 'Source updated successfully',
-        updatedSource: updatedSource,
+        allSources: allSources,
       });
     })
     .catch((err) => {
       res.status(500).json({
-        success: false,
-        errors: [{ error: err.message }],
+        errors: [{ error: err }],
       });
     });
-});
+};
+
+exports.deleteSource =
+  ("/deleteSource/:id",
+  (req, res, next) => {
+    const userId = req.user.id;
+    const sourceId = req.params.id;
+    console.log(sourceId);
+
+    // Find and remove the source by ID
+    Sources.findByIdAndDelete({ _id: sourceId, user: userId })
+      .then((deletedSource) => {
+        if (!deletedSource) {
+          return res.status(404).json({
+            success: false,
+            errors: [{ message: "Source not found" }],
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "Source deleted successfully",
+          deletedSource: deletedSource,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          success: false,
+          errors: [{ error: err }],
+        });
+      });
+  });
+
+// Update a source by ID
+exports.editSource =
+  ("/editSource/:id",
+  (req, res, next) => {
+    const userId = req.user.id;
+    const sourceId = req.params.id;
+    const { source, amount } = req.body;
+
+    // Validate that both source name and amount are provided
+    if (!source || !amount) {
+      return res.status(400).json({
+        success: false,
+        errors: [{ message: "Source name and amount are required" }],
+      });
+    }
+
+    // Find and update the source by ID
+    Sources.findByIdAndUpdate(
+      { _id: sourceId, user: userId },
+      { source: source, amount: amount },
+      { new: true }
+    )
+      .then((updatedSource) => {
+        if (!updatedSource) {
+          return res.status(404).json({
+            success: false,
+            errors: [{ message: "Source not found" }],
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "Source updated successfully",
+          updatedSource: updatedSource,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          success: false,
+          errors: [{ error: err.message }],
+        });
+      });
+  });
 
 //---------------------------------------------------------------Income
 
-exports.addIncome = ('/addIncome',(req, res, next) => {
-  const { sourceId, amount, date } = req.body;
+exports.addIncome =
+  ("/addIncome",
+  (req, res, next) => {
+    const { sourceId, amount, date } = req.body;
+    const userId = req.user.id;
 
-  // Assuming Income model has a field called source which references the Sources model
-  const income = new Income({
-    source: sourceId,
-    amount: parseFloat(amount), // Assuming amount is a string
-    date: new Date(date),
+    // Assuming Income model has a field called source which references the Sources model
+    const income = new Income({
+      source: sourceId,
+      amount: parseFloat(amount), // Assuming amount is a string
+      date: new Date(date),
+      user: userId,
+    });
+
+    income
+      .save()
+      .then((savedIncome) => {
+        // Update the source with the new income amount
+        Sources.findByIdAndUpdate(sourceId, {
+          $inc: { amount: parseFloat(amount) },
+        })
+          .then(() => {
+            res.status(200).json({
+              success: true,
+              savedIncome: savedIncome,
+            });
+          })
+          .catch((err) => {
+            res.status(500).json({
+              success: false,
+              errors: [{ error: err }],
+            });
+          });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          success: false,
+          errors: [{ error: err }],
+        });
+      });
   });
 
-  income
-    .save()
-    .then((savedIncome) => {
-      // Update the source with the new income amount
-      Sources.findByIdAndUpdate(sourceId, { $inc: { amount: parseFloat(amount) } })
-        .then(() => {
-          res.status(200).json({
-            success: true,
-            savedIncome: savedIncome,
-          });
-        })
-        .catch((err) => {
-          res.status(500).json({
-            success: false,
-            errors: [{ error: err }],
-          });
-        });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        success: false,
-        errors: [{ error: err }],
-      });
-    });
-});
-
-exports.getAllIncomes = ('/getAllIncomes', async (req, res) => {
-  try {
-    const allIncomes = await Income.find().populate('source');
-    res.status(200).json({
+exports.getAllIncomes =
+  ("/getAllIncomes",
+  async (req, res) => {
+    const userId = req.user.id;
+    try {
+      const allIncomes = await Income.find({ user: userId }).populate("source");
+      res.status(200).json({
         success: true,
-        allIncomes: allIncomes
-    });
-} catch (error) {
-    console.error('Error fetching incomes:', error);
-    res.status(500).json({
-        errors: [{ error: 'Internal Server Error' }]
-    });
-}
-});
+        allIncomes: allIncomes,
+      });
+    } catch (error) {
+      console.error("Error fetching incomes:", error);
+      res.status(500).json({
+        errors: [{ error: "Internal Server Error" }],
+      });
+    }
+  });
 
 //---------------------------------------------------Category--------------------------------------
-exports.addCategory = ('/addCategory',async (req, res) => {
-  try {
-    const { category } = req.body;
-    const newCategory = await Category.create({ category });
-    res.status(201).json({
-      success: true,
-      result: newCategory,
-    });
-  } catch (error) {
-    console.error('Error adding category:', error);
-    res.status(500).json({
-      errors: [{ error: 'Internal Server Error' }],
-    });
-  }
-});
-
-exports.deleteCategory = ('deleteCategory/:id',async (req, res) => {
-  console.log('here')
-  try {
-    const categoryId = req.params.id;
-    console.log(categoryId)
-    const deletedCategory = await Category.findByIdAndDelete(categoryId);
-    if (!deletedCategory) {
-      res.status(404).json({
-        success: false,
-        errors: [{ error: 'Category not found' }],
+exports.addCategory =
+  ("/addCategory",
+  async (req, res) => {
+    const userId = req.user.id;
+    try {
+      const { category } = req.body;
+      const newCategory = await Category.create({ category, user: userId });
+      res.status(201).json({
+        success: true,
+        result: newCategory,
       });
-      return;
-    }
-    res.status(200).json({
-      success: true,
-      result: deletedCategory,
-    });
-  } catch (error) {
-    console.error('Error deleting category:', error);
-    res.status(500).json({
-      errors: [{ error: 'Internal Server Error' }],
-    });
-  }
-});
-
-exports.editCategory = ('/editCategory/:id',async (req, res) => {
-  try {
-    const categoryId = req.params.id;
-    const { category } = req.body;
-    const updatedCategory = await Category.findByIdAndUpdate(
-      categoryId,
-      { category },
-      { new: true }
-    );
-    if (!updatedCategory) {
-      res.status(404).json({
-        success: false,
-        errors: [{ error: 'Category not found' }],
+    } catch (error) {
+      console.error("Error adding category:", error);
+      res.status(500).json({
+        errors: [{ error: "Internal Server Error" }],
       });
-      return;
     }
-    res.status(200).json({
-      success: true,
-      updatedCategory,
-    });
-  } catch (error) {
-    console.error('Error editing category:', error);
-    res.status(500).json({
-      errors: [{ error: 'Internal Server Error' }],
-    });
-  }
-});
+  });
 
-exports.getAllCategories = ('/getAllCategories',async (req, res) => {
-  try {
-    const allCategories = await Category.find();
-    res.status(200).json({
-      success: true,
-      allCategories,
-    });
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    res.status(500).json({
-      errors: [{ error: 'Internal Server Error' }],
-    });
-  }
-});
+exports.deleteCategory =
+  ("deleteCategory/:id",
+  async (req, res) => {
+    const userId = req.user.id;
+    console.log("here");
+    try {
+      const categoryId = req.params.id;
+      console.log(categoryId);
+      const deletedCategory = await Category.findByIdAndDelete({
+        _id: categoryId,
+        user: userId,
+      });
+      if (!deletedCategory) {
+        res.status(404).json({
+          success: false,
+          errors: [{ error: "Category not found" }],
+        });
+        return;
+      }
+      res.status(200).json({
+        success: true,
+        result: deletedCategory,
+      });
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      res.status(500).json({
+        errors: [{ error: "Internal Server Error" }],
+      });
+    }
+  });
 
+exports.editCategory =
+  ("/editCategory/:id",
+  async (req, res) => {
+    const userId = req.user.id;
+    try {
+      const categoryId = req.params.id;
+      const { category } = req.body;
+      const updatedCategory = await Category.findByIdAndUpdate(
+        { _id: categoryId, user: userId },
+        { category },
+        { new: true }
+      );
+      if (!updatedCategory) {
+        res.status(404).json({
+          success: false,
+          errors: [{ error: "Category not found" }],
+        });
+        return;
+      }
+      res.status(200).json({
+        success: true,
+        updatedCategory,
+      });
+    } catch (error) {
+      console.error("Error editing category:", error);
+      res.status(500).json({
+        errors: [{ error: "Internal Server Error" }],
+      });
+    }
+  });
+
+exports.getAllCategories =
+  ("/getAllCategories",
+  async (req, res) => {
+    const userId = req.user.id;
+    try {
+      const allCategories = await Category.find({ user: userId });
+      res.status(200).json({
+        success: true,
+        allCategories,
+      });
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      res.status(500).json({
+        errors: [{ error: "Internal Server Error" }],
+      });
+    }
+  });
 
 //-----------------------expense
 
-exports.addExpense = ('/addExpense', (req, res, next) => {
-  const { sourceId, categoryId, amount, date } = req.body;
+exports.addExpense =
+  ("/addExpense",
+  (req, res, next) => {
+    const { sourceId, categoryId, amount, date } = req.body;
+    const userId = req.user.id;
 
-  const expense = new Expense({
-    source: sourceId,
-    category: categoryId,
-    amount: parseFloat(amount),
-    date: new Date(date),
-  });
-  console.log(expense)
+    const expense = new Expense({
+      source: sourceId,
+      category: categoryId,
+      amount: parseFloat(amount),
+      date: new Date(date),
+      user: userId,
+    });
+    console.log(expense);
 
-  expense.save()
-    .then((savedExpense) => {
-      // Optionally update the source with the new expense amount if needed
-      Sources.findByIdAndUpdate(sourceId, { $inc: { amount: -parseFloat(amount) } })
-        .then(() => {
-          res.status(200).json({
-            success: true,
-            savedExpense: savedExpense,
-          });
+    expense
+      .save()
+      .then((savedExpense) => {
+        // Optionally update the source with the new expense amount if needed
+        Sources.findByIdAndUpdate(sourceId, {
+          $inc: { amount: -parseFloat(amount) },
         })
-        .catch((err) => {
-          res.status(500).json({
-            success: false,
-            errors: [{ error: err }],
+          .then(() => {
+            res.status(200).json({
+              success: true,
+              savedExpense: savedExpense,
+            });
+          })
+          .catch((err) => {
+            res.status(500).json({
+              success: false,
+              errors: [{ error: err }],
+            });
           });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          success: false,
+          errors: [{ error: err }],
         });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        success: false,
-        errors: [{ error: err }],
       });
-    });
-});
+  });
 
-exports.getAllExpenses = ('/getAllExpenses', async (req, res) => {
-  try {
-    const allExpenses = await Expense.find().populate('source category');
-    res.status(200).json({
-      success: true,
-      allExpenses: allExpenses,
-    });
-  } catch (error) {
-    console.error('Error fetching expenses:', error);
-    res.status(500).json({
-      errors: [{ error: 'Internal Server Error' }],
-    });
-  }
-});
+exports.getAllExpenses =
+  ("/getAllExpenses",
+  async (req, res) => {
+    const userId = req.user.id;
+    try {
+      const allExpenses = await Expense.find({ user: userId }).populate(
+        "source category"
+      );
+      res.status(200).json({
+        success: true,
+        allExpenses: allExpenses,
+      });
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+      res.status(500).json({
+        errors: [{ error: "Internal Server Error" }],
+      });
+    }
+  });

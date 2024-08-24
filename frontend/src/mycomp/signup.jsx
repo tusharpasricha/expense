@@ -3,6 +3,14 @@ import { Button } from "@/components/ui/button"
 import {useState} from 'react';
 import { Alert, AlertDescription, AlertTitle} from "@/components/ui/alert"
 import { Link, useNavigate } from 'react-router-dom';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+  } from "@/components/ui/card"
 
 
 
@@ -19,6 +27,7 @@ const Signup = ()=>{
 
         if(!username || !password){
             setError('Please enter username and password');
+            return;
         }
         try{
             const response = await fetch('http://localhost:3000/api/signUp',{
@@ -32,10 +41,10 @@ const Signup = ()=>{
                 })
             })
 
-            const data = await response.json;
+            const data = await response.json();
 
             if(response.ok){
-                navigation('/',{ state: { username: username ,isLoggedIn: true } })
+                navigation('/login')
                 console.log('Signed up',data);
             }
             else{
@@ -44,32 +53,47 @@ const Signup = ()=>{
         }
         catch(error){
             console.log(error)
+            setError('Signup failed')
         }
         
 
     }
     return(
-        <>
-        <div>SignUp</div>
-        <form onSubmit={handleSubmit}>
-        <Input type="text" name="username"/>
-        <Input type="password" name = "password"/>
-        <Button type = "Submit"> Submit </Button>
-        </form>
+        
+        <div className="flex justify-center items-center flex-col">
+        <Card >
+        <CardHeader>
+            <CardTitle>Signup</CardTitle>
+            <CardDescription>To create a new account, please signup below</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <form onSubmit={handleSubmit}>
+            <Input placeholder="Username" type="text" name="username"/>
+            <br />
+            <Input placeholder="Password" type="password" name = "password"/>
+            <br />
+            <Button type = "Submit"> Submit </Button>
+            </form>
+        </CardContent>
+        <CardFooter>
+        
+        <p className="link">
+         Have an account? 
+         <Link to="/login"> Login</Link>
+        </p>
+        </CardFooter>
         {error &&<Alert>
-        <AlertTitle>Attention!</AlertTitle>
+        <AlertTitle>Oohoo!</AlertTitle>
         <AlertDescription>
             {error}
         </AlertDescription>
         </Alert>
         }
-        <p className="link">
-         Have an account? 
-         <Link to="/login">LogIn</Link>
-        </p>
         
-
-        </>
+        </Card>
+        
+        </div>
+       
     )
 
 }

@@ -3,6 +3,15 @@ import { Button } from "@/components/ui/button"
 import {useState} from 'react';
 import { Alert, AlertDescription, AlertTitle} from "@/components/ui/alert"
 import { Link, useNavigate } from 'react-router-dom';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+  } from "@/components/ui/card"
+  
 
 
 
@@ -19,6 +28,7 @@ const Login = ()=>{
 
         if(!username || !password){
             setError('Please enter username and password');
+            return;
         }
         try{
             const response = await fetch('http://localhost:3000/api/logIn',{
@@ -47,32 +57,46 @@ const Login = ()=>{
         }
         catch(error){
             console.log(error)
+            setError('Login Failed')
         }
         
 
     }
     return(
-        <>
-        <div>Login</div>
-        <form onSubmit={handleSubmit}>
-        <Input type="text" name="username"/>
-        <Input type="password" name = "password"/>
-        <Button type = "Submit"> Submit </Button>
-        </form>
+        <div className="flex justify-center items-center flex-col">
+        <Card >
+        <CardHeader>
+            <CardTitle>Login</CardTitle>
+            <CardDescription>To access your account, please login below.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <form onSubmit={handleSubmit}>
+                <Input placeholder="Username" type="text" name="username"/>
+                <br></br>
+                <Input placeholder=" Password" type="password" name = "password"/>
+                <br></br>
+                <Button type = "Submit"> Submit </Button>
+            </form>
+        </CardContent>
+        <CardFooter>
+        
+        
+        <p className="link">
+         Do not have an account? 
+         <Link to="/signup"> Signup</Link>
+        </p>
+        </CardFooter>
         {error &&<Alert>
-        <AlertTitle>Attention!</AlertTitle>
+        <AlertTitle>Oohoo!</AlertTitle>
         <AlertDescription>
             {error}
         </AlertDescription>
         </Alert>
         }
-        <p className="link">
-         Do not have an account? 
-         <Link to="/signup">Signup</Link>
-        </p>
         
-
-        </>
+        </Card>
+        
+        </div>
     )
 
 }
