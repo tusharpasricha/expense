@@ -37,9 +37,16 @@ import {
 import { Button } from "@/components/ui/button";
 
 function Track() {
-  const [selectedYear, setSelectedYear] = useState("2024");
+  const [selectedYear, setSelectedYear] = useState(0);
   const [incomeData, setIncomeData] = useState([]);
   const [expenseData, setExpenseData] = useState([]);
+
+  const currentYear = new Date().getFullYear();
+  const startYear = 2000; // You can adjust this starting year if needed
+  const years = Array.from(
+    { length: currentYear - startYear + 1 },
+    (v, i) => startYear + i
+  ).reverse();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -109,9 +116,11 @@ function Track() {
                 <SelectValue placeholder="Year" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="2024">2024</SelectItem>
-                <SelectItem value="2023">2023</SelectItem>
-                <SelectItem value="2022">2022</SelectItem>
+                {years.map((year) => (
+                  <SelectItem key={year} value={year}>
+                    {year}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Table>
@@ -126,7 +135,7 @@ function Track() {
                 <TableRow>
                   <TableCell className="font-medium">Income</TableCell>
                   <TableCell className="text-right">
-                    $
+                  ₹
                     {incomeData
                       .reduce((acc, item) => acc + item.amount, 0)
                       .toFixed(2)}
@@ -137,7 +146,7 @@ function Track() {
                 <TableRow>
                   <TableCell className="font-medium">Expense</TableCell>
                   <TableCell className="text-right">
-                    $
+                  ₹
                     {expenseData
                       .reduce((acc, item) => acc + item.amount, 0)
                       .toFixed(2)}

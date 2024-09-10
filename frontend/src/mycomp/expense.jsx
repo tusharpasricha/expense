@@ -115,32 +115,46 @@ function Expense({ onExpenseSaved }) {
         <CardDescription>Click on Save after Changes</CardDescription>
       </CardHeader>
       <CardContent>
-        <Select onValueChange={(value) => setSelectedSource(value)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Source" />
-          </SelectTrigger>
-          <SelectContent>
-            {sources.map((source) => (
-              <SelectItem key={source._id} value={source._id}>
-                {source.source}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        
+          {sources.length === 0 ? (
+            <p className="text-red-500">
+              Please add a source before adding expenses.
+            </p>
+          ) : (
+            <Select onValueChange={(value) => setSelectedSource(value)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Source" />
+              </SelectTrigger>
+              <SelectContent>
+                {sources.map((source) => (
+                  <SelectItem key={source._id} value={source._id}>
+                    {source.source}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        
       </CardContent>
       <CardContent>
-        <Select onValueChange={(value) => setSelectedCategory(value)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category._id} value={category._id}>
-                {category.category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {categories.length === 0 ? (
+          <p className="text-red-500">
+            Please add a category before adding expenses.
+          </p>
+        ) : (
+          <Select onValueChange={(value) => setSelectedCategory(value)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category._id} value={category._id}>
+                  {category.category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </CardContent>
       <CardContent>
         <Popover>

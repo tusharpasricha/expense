@@ -24,7 +24,7 @@ function Head() {
 
   return (
     <div className="ml-20 mr-10 flex text-7xl justify-between items-center ">
-      Expense Tracker
+      Spendo💰
       <Sheet>
         <SheetTrigger>
           <Avatar>

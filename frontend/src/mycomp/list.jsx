@@ -59,13 +59,13 @@ function List({ incomes, expenses }) {
                 <TableCell>{transaction.type}</TableCell>
                 <TableCell>
                   {transaction.type === "INCOME"
-                    ? transaction.source.source
-                    : transaction.category.category}
+                    ? transaction.source?.source || "No source"
+                    : transaction.category?.category || "No category"}
                 </TableCell>
                 <TableCell className="text-right">
                   {transaction.type === "INCOME"
-                    ? `+${transaction.amount}`
-                    : `-${transaction.amount}`}
+                    ? <p className="text-green-500">{"+"+transaction.amount}</p>
+                    :  <p className="text-red-500">{"-"+transaction.amount}</p>}
                 </TableCell>
               </TableRow>
             ))}
