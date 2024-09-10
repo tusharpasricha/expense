@@ -43,12 +43,12 @@ function Categories() {
 
   const handleAddCategory = () => {
     if (newCategory.category) {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       fetch("http://localhost:3000/api/addCategory", {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           category: newCategory.category,
@@ -65,13 +65,13 @@ function Categories() {
 
   const handleDeleteCategory = (index) => {
     const categoryToDelete = categories[index];
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     console.log("Deleting category ID:", categoryToDelete._id); // Logging the ID
 
     fetch(`http://localhost:3000/api/deleteCategory/${categoryToDelete._id}`, {
       method: "DELETE",
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => response.json())
@@ -94,14 +94,14 @@ function Categories() {
   };
 
   const handleSaveEdit = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     console.log("Editing category ID:", editCategory._id); // Logging the ID
 
     fetch(`http://localhost:3000/api/editCategory/${editCategory._id}`, {
       method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         category: editCategory.category,
@@ -123,11 +123,11 @@ function Categories() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    fetch("http://localhost:3000/api/getAllCategories",{
-      headers:{
-        'Authorization':`Bearer ${token}`
-      }
+    const token = localStorage.getItem("token");
+    fetch("http://localhost:3000/api/getAllCategories", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => response.json())
       .then((data) => {
@@ -141,20 +141,35 @@ function Categories() {
       <ScrollArea className="h-[16vh] w-70 rounded-md border">
         <Table>
           <TableCaption>
-            <Popover>
-              <PopoverTrigger>ADD a new Category</PopoverTrigger>
+            A list of all categories
+          </TableCaption>
+
+          <TableHeader>
+            <TableRow>
+              <TableHead>Category</TableHead>
+              <TableHead></TableHead>
+              <TableHead></TableHead>
+
+              <TableHead>
+              <Popover>
+              <PopoverTrigger><Button>Add</Button></PopoverTrigger>
               <PopoverContent className="dark">
                 <Card className="dark">
                   <CardHeader>
                     <CardTitle>ADD</CardTitle>
-                    <CardDescription>Click on Save after Changes</CardDescription>
+                    <CardDescription>
+                      Click on Save after Changes
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Input
                       placeholder="Category"
                       value={newCategory.category}
                       onChange={(e) =>
-                        setNewCategory({ ...newCategory, category: e.target.value })
+                        setNewCategory({
+                          ...newCategory,
+                          category: e.target.value,
+                        })
                       }
                     />
                   </CardContent>
@@ -165,17 +180,15 @@ function Categories() {
                 </Card>
               </PopoverContent>
             </Popover>
-          </TableCaption>
-
-          <TableHeader>
-            <TableRow>
-              <TableHead>Category</TableHead>
+              </TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
             {categories.map((category, index) => (
-              <TableRow key={category._id}> {/* Updated: use category._id as key */}
+              <TableRow key={category._id}>
+                {" "}
+                {/* Updated: use category._id as key */}
                 <TableCell>{category.category}</TableCell>
                 <TableCell>
                   <Popover>
@@ -209,7 +222,6 @@ function Categories() {
                     </PopoverContent>
                   </Popover>
                 </TableCell>
-
                 <TableCell className="dark">
                   <Dialog>
                     <DialogTrigger>Delete</DialogTrigger>
@@ -217,8 +229,9 @@ function Categories() {
                       <DialogHeader>
                         <DialogTitle>Are you absolutely sure?</DialogTitle>
                         <DialogDescription>
-                          This action cannot be undone. This will permanently delete
-                          your category and remove your data from our servers.
+                          This action cannot be undone. This will permanently
+                          delete your category and remove your data from our
+                          servers.
                         </DialogDescription>
                         <Button onClick={() => handleDeleteCategory(index)}>
                           Delete

@@ -27,43 +27,41 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PropTypes from "prop-types";
 
-
-
 function Income({ onIncomeSaved }) {
   const [date, setDate] = useState();
   const [sources, setSources] = useState([]);
-  const [selectedSource, setSelectedSource] = useState('');
+  const [selectedSource, setSelectedSource] = useState("");
   const [amount, setAmount] = useState("");
-  const [errorMsg,setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    fetch('http://localhost:3000/api/getAllSources',{
+    const token = localStorage.getItem("token");
+    fetch("http://localhost:3000/api/getAllSources", {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
     })
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         setSources(data.allSources);
       })
-      .catch(error => console.error('Error fetching sources:', error));
+      .catch((error) => console.error("Error fetching sources:", error));
   }, []);
 
   const handleSave = () => {
-    const token = localStorage.getItem('token')
-    if (!selectedSource || !amount || !date){
-      setErrorMsg('Fill out all the fields');
+    const token = localStorage.getItem("token");
+    if (!selectedSource || !amount || !date) {
+      setErrorMsg("Fill out all the fields");
       return;
     }
-    setErrorMsg('');
-    
+    setErrorMsg("");
+
     if (selectedSource && amount && date) {
-      fetch('http://localhost:3000/api/addIncome', {
-        method: 'POST',
+      fetch("http://localhost:3000/api/addIncome", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           sourceId: selectedSource,
@@ -74,18 +72,18 @@ function Income({ onIncomeSaved }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            console.log('Income added successfully:', data.savedIncome);
+            console.log("Income added successfully:", data.savedIncome);
             onIncomeSaved(data.savedIncome); // Call the callback function
           } else {
-            console.error('Error adding income:', data.errors);
+            console.error("Error adding income:", data.errors);
           }
         })
-        .catch((error) => console.error('Error adding income:', error));
+        .catch((error) => console.error("Error adding income:", error));
     }
   };
 
   return (
-    <Card className='dark'>
+    <Card className="dark">
       <CardHeader>
         <CardTitle>ADD Income</CardTitle>
         <CardDescription>Click on Save after Changes</CardDescription>
@@ -97,10 +95,7 @@ function Income({ onIncomeSaved }) {
           </SelectTrigger>
           <SelectContent>
             {sources.map((source) => (
-              <SelectItem
-                key={source._id}
-                value={source._id}
-              >
+              <SelectItem key={source._id} value={source._id}>
                 {source.source}
               </SelectItem>
             ))}

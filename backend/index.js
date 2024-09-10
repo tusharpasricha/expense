@@ -6,7 +6,6 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const port = process.env.PORT || 3000;
 
-
 dotenv.config({
   path: "./.env",
 });

@@ -5,63 +5,62 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 
 import PropTypes from "prop-types";
-
 
 function Expense({ onExpenseSaved }) {
   const [date, setDate] = useState();
   const [categories, setCategories] = useState([]);
   const [sources, setSources] = useState([]);
-  const [selectedSource, setSelectedSource] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [amount, setAmount] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [selectedSource, setSelectedSource] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [amount, setAmount] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    fetch('http://localhost:3000/api/getAllSources',{
+    const token = localStorage.getItem("token");
+    fetch("http://localhost:3000/api/getAllSources", {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         setSources(data.allSources);
       })
-      .catch(error => console.error('Error fetching sources:', error));
+      .catch((error) => console.error("Error fetching sources:", error));
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    console.log('token inside expense',token);
-    fetch("http://localhost:3000/api/getAllCategories",{
+    const token = localStorage.getItem("token");
+    console.log("token inside expense", token);
+    fetch("http://localhost:3000/api/getAllCategories", {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => response.json())
@@ -72,19 +71,19 @@ function Expense({ onExpenseSaved }) {
   }, []);
 
   const handleSave = () => {
-    const token = localStorage.getItem('token')
-    if(!selectedCategory || !selectedSource || !amount || !date){
-      setErrorMsg('Fill out all the fields');
+    const token = localStorage.getItem("token");
+    if (!selectedCategory || !selectedSource || !amount || !date) {
+      setErrorMsg("Fill out all the fields");
 
       return;
     }
-    setErrorMsg('')
+    setErrorMsg("");
     if (selectedSource && selectedCategory && amount && date) {
-      fetch('http://localhost:3000/api/addExpense', {
-        method: 'POST',
+      fetch("http://localhost:3000/api/addExpense", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           sourceId: selectedSource,
@@ -98,19 +97,19 @@ function Expense({ onExpenseSaved }) {
           if (data.success) {
             onExpenseSaved(data.savedExpense); // Call the callback to update the list
             setDate(null);
-            setSelectedSource('');
-            setSelectedCategory('');
-            setAmount('');
+            setSelectedSource("");
+            setSelectedCategory("");
+            setAmount("");
           } else {
-            console.error('Error adding expense:', data.errors);
+            console.error("Error adding expense:", data.errors);
           }
         })
-        .catch((error) => console.error('Error adding expense:', error));
+        .catch((error) => console.error("Error adding expense:", error));
     }
   };
 
   return (
-    <Card className='dark'>
+    <Card className="dark">
       <CardHeader>
         <CardTitle>ADD Expense</CardTitle>
         <CardDescription>Click on Save after Changes</CardDescription>

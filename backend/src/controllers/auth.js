@@ -10,27 +10,35 @@ const jwt = require("jsonwebtoken");
 //-------------------------------------------------------------------------------------------------------------
 exports.signUp = async (req, res) => {
   const { username, password } = req.body;
+  console.log("Sign up attempt: "+ username)
+
   try {
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      console.log("User already exist")
+      return res.status(400).send({ error: "User already exists" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, password: hashedPassword });
     await user.save();
-    res.status(201).send("User Registered");
+    res.status(201).send({ message: "User Registered" });
   } catch (error) {
     console.error("Error hashing password:", error);
-    res.status(500).send("Error registering user");
+    res.status(500).send({ error: "Error registering user" });
   }
 };
 exports.logIn = async (req, res) => {
   const { username, password } = req.body;
-  console.log('user logged in',username);
+  console.log("log in attempt", username);
   const user = await User.findOne({ username });
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).send("Invalid credentials");
+    return res.status(401).send({ message: "Invalid credentials" });
   }
   const token = jwt.sign({ id: user._id }, "your_jwt_secret", {
     expiresIn: "1h",
   });
-  console.log('token to be send',token);
+  console.log("token to be send", token);
   res.json({ token });
 };
 

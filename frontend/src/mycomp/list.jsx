@@ -1,5 +1,5 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { format } from 'date-fns';
+import { format } from "date-fns";
 import PropTypes from "prop-types";
 
 import {
@@ -15,8 +15,16 @@ import {
 function List({ incomes, expenses }) {
   // Add a unique identifier to each transaction based on timestamp or order
   const transactions = [
-    ...incomes.map((income, index) => ({ ...income, type: 'INCOME', timestamp: new Date(income.date).getTime() })),
-    ...expenses.map((expense, index) => ({ ...expense, type: 'EXPENSE', timestamp: new Date(expense.date).getTime() })),
+    ...incomes.map((income, index) => ({
+      ...income,
+      type: "INCOME",
+      timestamp: new Date(income.date).getTime(),
+    })),
+    ...expenses.map((expense, index) => ({
+      ...expense,
+      type: "EXPENSE",
+      timestamp: new Date(expense.date).getTime(),
+    })),
   ];
 
   // Sort transactions by date first, then by timestamp in descending order
@@ -50,12 +58,12 @@ function List({ incomes, expenses }) {
                 </TableCell>
                 <TableCell>{transaction.type}</TableCell>
                 <TableCell>
-                  {transaction.type === 'INCOME'
+                  {transaction.type === "INCOME"
                     ? transaction.source.source
                     : transaction.category.category}
                 </TableCell>
                 <TableCell className="text-right">
-                  {transaction.type === 'INCOME'
+                  {transaction.type === "INCOME"
                     ? `+${transaction.amount}`
                     : `-${transaction.amount}`}
                 </TableCell>

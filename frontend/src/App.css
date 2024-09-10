@@ -1,15 +1,15 @@
-.mineouter{
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    justify-content: space-around;
+.mineouter {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: space-around;
 }
-.mineinner{
-    align-items: center;
+.mineinner {
+  align-items: center;
 }
-.mineinner2{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    height: 100%;
+.mineinner2 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 100%;
 }
