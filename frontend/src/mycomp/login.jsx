@@ -26,7 +26,7 @@ const Login = () => {
       return;
     }
     try {
-      const response = await fetch("http://localhost:3000/api/logIn", {
+      const response = await fetch("https://spendwiser-backend.vercel.app/api/logIn", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
