@@ -16,9 +16,9 @@ mongoose.connect(process.env.MONGO).then(() => {
 
 const app = express();
 app.use(cors({
-  origin: 'https://spendwiser.vercel.app', // or ['https://spendwiser.vercel.app'] if you need to specify multiple origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods if needed
-  credentials: true // Enable if you are sending cookies or authorization headers
+  origin: 'https://spendwiser.vercel.app',  
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],  
+  credentials: true 
 }));
 
 app.use(bodyParser.json());

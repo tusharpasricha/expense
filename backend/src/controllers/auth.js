@@ -33,14 +33,12 @@ exports.logIn = async (req, res) => {
     const { username, password } = req.body;
     console.log("log in attempt", username);
     
-    // Check if username and password are provided
     if (!username || !password) {
       return res.status(400).send({ message: "Username and password are required" });
     }
 
     const user = await User.findOne({ username });
     
-    // Handle user not found or password mismatch
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).send({ message: "Invalid credentials" });
     }
@@ -56,7 +54,6 @@ exports.logIn = async (req, res) => {
     res.status(500).send({ message: "Internal server error" });
   }
 };
-
 
 exports.profile = async (req, res) => {
   res.json({ message: "This is protected data", user: req.user });
@@ -213,7 +210,6 @@ exports.deleteSource =
       });
   });
 
-// Update a source by ID
 exports.editSource =
   ("/editSource/:id",
   (req, res, next) => {
@@ -221,7 +217,6 @@ exports.editSource =
     const sourceId = req.params.id;
     const { source, amount } = req.body;
 
-    // Validate that both source name and amount are provided
     if (!source || !amount) {
       return res.status(400).json({
         success: false,
@@ -229,7 +224,6 @@ exports.editSource =
       });
     }
 
-    // Find and update the source by ID
     Sources.findByIdAndUpdate(
       { _id: sourceId, user: userId },
       { source: source, amount: amount },
@@ -265,10 +259,9 @@ exports.addIncome =
     const { sourceId, amount, date } = req.body;
     const userId = req.user.id;
 
-    // Assuming Income model has a field called source which references the Sources model
     const income = new Income({
       source: sourceId,
-      amount: parseFloat(amount), // Assuming amount is a string
+      amount: parseFloat(amount),
       date: new Date(date),
       user: userId,
     });
@@ -276,7 +269,6 @@ exports.addIncome =
     income
       .save()
       .then((savedIncome) => {
-        // Update the source with the new income amount
         Sources.findByIdAndUpdate(sourceId, {
           $inc: { amount: parseFloat(amount) },
         })
