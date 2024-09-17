@@ -48,7 +48,7 @@ exports.profile = async (req, res) => {
 //-------------------------------------------------------------------------------------------------------------
 
 exports.getIncomesByYear = async (req, res) => {
-  const { year } = req.query;
+  const { year, month } = req.query;
   const userId = req.user.id;
 
   try {
@@ -57,8 +57,17 @@ exports.getIncomesByYear = async (req, res) => {
     }
     const yearInt = parseInt(year, 10);
 
-    const startDate = new Date(yearInt, 0, 1); // January 1st of the year
-    const endDate = new Date(yearInt + 1, 0, 1); // January 1st of the next year
+    let startDate, endDate;
+
+    if (month && !isNaN(month)) {
+      const monthInt = parseInt(month, 10) - 1; // JS months are 0-indexed
+      startDate = new Date(yearInt, monthInt, 1); // 1st of the specified month
+      endDate = new Date(yearInt, monthInt + 1, 1); // 1st of the next month
+    } else {
+      // Default to the full year
+      startDate = new Date(yearInt, 0, 1); // January 1st of the year
+      endDate = new Date(yearInt + 1, 0, 1); // January 1st of the next year
+    }
 
     const incomes = await Income.find({
       date: {
@@ -70,20 +79,32 @@ exports.getIncomesByYear = async (req, res) => {
 
     res.status(200).json(incomes);
   } catch (error) {
-    console.error("Error fetching incomes by year:", error);
+    console.error("Error fetching incomes by year and month:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
 exports.getExpensesByYear = async (req, res) => {
-  const { year } = req.query;
+  const { year, month } = req.query;
   const userId = req.user.id;
 
   try {
-    const yearInt = parseInt(year);
+    if (!year || isNaN(year)) {
+      return res.status(400).json({ error: "Invalid year parameter" });
+    }
+    const yearInt = parseInt(year, 10);
 
-    const startDate = new Date(yearInt, 0, 1); // January 1st of the year
-    const endDate = new Date(yearInt + 1, 0, 1); // January 1st of the next year
+    let startDate, endDate;
+
+    if (month && !isNaN(month)) {
+      const monthInt = parseInt(month, 10) - 1; // JS months are 0-indexed
+      startDate = new Date(yearInt, monthInt, 1); // 1st of the specified month
+      endDate = new Date(yearInt, monthInt + 1, 1); // 1st of the next month
+    } else {
+      // Default to the full year
+      startDate = new Date(yearInt, 0, 1); // January 1st of the year
+      endDate = new Date(yearInt + 1, 0, 1); // January 1st of the next year
+    }
 
     const expenses = await Expense.find({
       date: {
@@ -94,11 +115,14 @@ exports.getExpensesByYear = async (req, res) => {
     })
       .populate("source")
       .populate("category");
+
     res.status(200).json(expenses);
   } catch (error) {
+    console.error("Error fetching expenses by year and month:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
 //-------------------------------------------------------------------------------------------------------------
 
 exports.addSource = (req, res, next) => {
