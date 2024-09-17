@@ -29,18 +29,34 @@ exports.signUp = async (req, res) => {
   }
 };
 exports.logIn = async (req, res) => {
-  const { username, password } = req.body;
-  console.log("log in attempt", username);
-  const user = await User.findOne({ username });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).send({ message: "Invalid credentials" });
+  try {
+    const { username, password } = req.body;
+    console.log("log in attempt", username);
+    
+    // Check if username and password are provided
+    if (!username || !password) {
+      return res.status(400).send({ message: "Username and password are required" });
+    }
+
+    const user = await User.findOne({ username });
+    
+    // Handle user not found or password mismatch
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).send({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ id: user._id }, "your_jwt_secret", {
+      expiresIn: "1h",
+    });
+    console.log("token to be sent", token);
+    
+    res.json({ token });
+  } catch (error) {
+    console.error("Error during login", error);
+    res.status(500).send({ message: "Internal server error" });
   }
-  const token = jwt.sign({ id: user._id }, "your_jwt_secret", {
-    expiresIn: "1h",
-  });
-  console.log("token to be send", token);
-  res.json({ token });
 };
+
 
 exports.profile = async (req, res) => {
   res.json({ message: "This is protected data", user: req.user });
