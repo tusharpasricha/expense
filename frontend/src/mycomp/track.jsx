@@ -73,7 +73,7 @@ function Track() {
         const yearMonthQuery = `year=${selectedYear}` + (selectedMonth ? `&month=${selectedMonth}` : "");
 
         const incomeResponse = await fetch(
-          `http://localhost:3000/api/incomes?${yearMonthQuery}`,
+          `https://spendwiser-backend.vercel.app/api/incomes?${yearMonthQuery}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -87,7 +87,7 @@ function Track() {
         setIncomeData(incomeData);
 
         const expenseResponse = await fetch(
-          `http://localhost:3000/api/expenses?${yearMonthQuery}`,
+          `https://spendwiser-backend.vercel.app/api/expenses?${yearMonthQuery}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -32,7 +32,7 @@ function MainPage() {
       return;
     }
 
-    fetch("http://localhost:3000/api/getAllIncomes", {
+    fetch("https://spendwiser-backend.vercel.app/api/getAllIncomes", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -41,7 +41,7 @@ function MainPage() {
       .then((data) => setIncomes(data.allIncomes))
       .catch((error) => console.error("Error fetching incomes:", error));
 
-    fetch("http://localhost:3000/api/getAllExpenses", {
+    fetch("https://spendwiser-backend.vercel.app/api/getAllExpenses", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -49,7 +49,7 @@ function MainPage() {
       .then((response) => response.json())
       .then((data) => setExpenses(data.allExpenses))
       .catch((error) => console.error("Error fetching expenses:", error));
-  }, [isLoggedIn, navigate,incomes]);
+  }, [isLoggedIn, navigate, incomes]);
 
   const handleIncomeSaved = (newIncome) => {
     setIncomes((prevIncomes) => [...prevIncomes, newIncome]);

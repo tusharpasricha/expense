@@ -43,7 +43,7 @@ function Expense({ onExpenseSaved }) {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:3000/api/getAllSources", {
+    fetch("https://spendwiser-backend.vercel.app/api/getAllSources", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -58,7 +58,7 @@ function Expense({ onExpenseSaved }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
     console.log("token inside expense", token);
-    fetch("http://localhost:3000/api/getAllCategories", {
+    fetch("https://spendwiser-backend.vercel.app/api/getAllCategories", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -79,7 +79,7 @@ function Expense({ onExpenseSaved }) {
     }
     setErrorMsg("");
     if (selectedSource && selectedCategory && amount && date) {
-      fetch("http://localhost:3000/api/addExpense", {
+      fetch("https://spendwiser-backend.vercel.app/api/addExpense", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

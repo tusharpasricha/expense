@@ -51,7 +51,7 @@ function Accounts() {
     if (newSource.source && newSource.amount) {
       const token = localStorage.getItem("token");
       // Make a POST request to your backend route
-      fetch("http://localhost:3000/api/addSource", {
+      fetch("https://spendwiser-backend.vercel.app/api/addSource", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +80,7 @@ function Accounts() {
     const token = localStorage.getItem("token");
 
     // Make a DELETE request to your backend route
-    fetch(`http://localhost:3000/api/deleteSource/${sourceToDelete._id}`, {
+    fetch(`https://spendwiser-backend.vercel.app/api/deleteSource/${sourceToDelete._id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -106,7 +106,7 @@ function Accounts() {
   };
   const handleSaveEdit = () => {
     const token = localStorage.getItem("token");
-    fetch(`http://localhost:3000/api/editSource/${editSource._id}`, {
+    fetch(`https://spendwiser-backend.vercel.app/api/editSource/${editSource._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -139,7 +139,7 @@ function Accounts() {
   useEffect(() => {
     // Fetch data from the backend when the component mounts
     const token = localStorage.getItem("token");
-    fetch("http://localhost:3000/api/getAllSources", {
+    fetch("https://spendwiser-backend.vercel.app/api/getAllSources", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

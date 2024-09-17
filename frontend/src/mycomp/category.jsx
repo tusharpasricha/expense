@@ -44,7 +44,7 @@ function Categories() {
   const handleAddCategory = () => {
     if (newCategory.category) {
       const token = localStorage.getItem("token");
-      fetch("http://localhost:3000/api/addCategory", {
+      fetch("https://spendwiser-backend.vercel.app/api/addCategory", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +68,7 @@ function Categories() {
     const token = localStorage.getItem("token");
     console.log("Deleting category ID:", categoryToDelete._id); // Logging the ID
 
-    fetch(`http://localhost:3000/api/deleteCategory/${categoryToDelete._id}`, {
+    fetch(`https://spendwiser-backend.vercel.app/api/deleteCategory/${categoryToDelete._id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -97,7 +97,7 @@ function Categories() {
     const token = localStorage.getItem("token");
     console.log("Editing category ID:", editCategory._id); // Logging the ID
 
-    fetch(`http://localhost:3000/api/editCategory/${editCategory._id}`, {
+    fetch(`https://spendwiser-backend.vercel.app/api/editCategory/${editCategory._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -124,7 +124,7 @@ function Categories() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:3000/api/getAllCategories", {
+    fetch("https://spendwiser-backend.vercel.app/api/getAllCategories", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
