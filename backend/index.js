@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGO).then(() => {
 
 const app = express();
 app.use(cors({
-   origin: "https://spendwiser.vercel.app"
+  origin: "*"
 }));
 app.use(bodyParser.json());
 app.use("/api", appRoutes);
