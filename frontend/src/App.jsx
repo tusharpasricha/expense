@@ -49,7 +49,7 @@ function MainPage() {
       .then((response) => response.json())
       .then((data) => setExpenses(data.allExpenses))
       .catch((error) => console.error("Error fetching expenses:", error));
-  }, [isLoggedIn, navigate, incomes]);
+  }, [isLoggedIn, navigate, incomes,expenses]);
 
   const handleIncomeSaved = (newIncome) => {
     setIncomes((prevIncomes) => [...prevIncomes, newIncome]);

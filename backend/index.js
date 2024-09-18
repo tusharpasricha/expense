@@ -15,9 +15,22 @@ mongoose.connect(process.env.MONGO).then(() => {
 });
 
 const app = express();
+
+const allowedOrigins = [
+  'https://spendwiser.vercel.app',
+  'http://localhost:5173'
+];
+
 app.use(cors({
-  origin: 'https://spendwiser.vercel.app',  
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],  
+  origin: (origin, callback) => {
+    // Check if the origin is in the allowedOrigins array or if it's not defined (e.g., requests from mobile apps)
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true); // Allow the request
+    } else {
+      callback(new Error('Not allowed by CORS')); // Reject the request
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
   credentials: true 
 }));
 

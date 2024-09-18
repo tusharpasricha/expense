@@ -66,7 +66,7 @@ function Categories() {
   const handleDeleteCategory = (index) => {
     const categoryToDelete = categories[index];
     const token = localStorage.getItem("token");
-    console.log("Deleting category ID:", categoryToDelete._id); // Logging the ID
+    console.log("Deleting category ID:", categoryToDelete._id); 
 
     fetch(`https://spendwiser-backend.vercel.app/api/deleteCategory/${categoryToDelete._id}`, {
       method: "DELETE",
@@ -95,7 +95,7 @@ function Categories() {
 
   const handleSaveEdit = () => {
     const token = localStorage.getItem("token");
-    console.log("Editing category ID:", editCategory._id); // Logging the ID
+    console.log("Editing category ID:", editCategory._id); 
 
     fetch(`https://spendwiser-backend.vercel.app/api/editCategory/${editCategory._id}`, {
       method: "PUT",
@@ -188,7 +188,6 @@ function Categories() {
             {categories.map((category, index) => (
               <TableRow key={category._id}>
                 {" "}
-                {/* Updated: use category._id as key */}
                 <TableCell>{category.category}</TableCell>
                 <TableCell>
                   <Popover>

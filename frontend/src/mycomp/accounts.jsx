@@ -64,9 +64,7 @@ function Accounts() {
       })
         .then((response) => response.json())
         .then((data) => {
-          // Update the state with the new source received from the backend
           setSources((prevSources) => [...prevSources, data.result]);
-          // Clear the input fields
           setNewSource({ source: "", amount: "" });
         })
         .catch((error) => console.error("Error adding source:", error));
@@ -74,12 +72,10 @@ function Accounts() {
   };
 
   const handleDeleteSource = (index) => {
-    // Assuming sources[index] contains the details of the source to be deleted
     const sourceToDelete = sources[index];
     console.log(sourceToDelete._id);
     const token = localStorage.getItem("token");
 
-    // Make a DELETE request to your backend route
     fetch(`https://spendwiser-backend.vercel.app/api/deleteSource/${sourceToDelete._id}`, {
       method: "DELETE",
       headers: {
@@ -89,7 +85,6 @@ function Accounts() {
     })
       .then((response) => response.json())
       .then((data) => {
-        // If the deletion was successful, update the state
         if (data.success) {
           const updatedSources = [...sources];
           updatedSources.splice(index, 1);

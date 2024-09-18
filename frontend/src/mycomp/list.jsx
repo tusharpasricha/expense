@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/table";
 
 function List({ incomes, expenses }) {
-  // Add a unique identifier to each transaction based on timestamp or order
   const transactions = [
     ...incomes.map((income, index) => ({
       ...income,
@@ -27,13 +26,11 @@ function List({ incomes, expenses }) {
     })),
   ];
 
-  // Sort transactions by date first, then by timestamp in descending order
   const sortedTransactions = transactions.sort((a, b) => {
     const dateComparison = new Date(b.date) - new Date(a.date);
     if (dateComparison !== 0) {
       return dateComparison;
     }
-    // If dates are the same, sort by timestamp in descending order
     return b.timestamp - a.timestamp;
   });
 

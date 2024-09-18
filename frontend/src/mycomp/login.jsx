@@ -55,7 +55,7 @@ const Login = () => {
     }
   };
   const handleInputChange = () => {
-    setError(""); // Reset error when user starts typing
+    setError(""); 
   };
   return (
     <>

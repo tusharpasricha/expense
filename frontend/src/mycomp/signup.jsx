@@ -56,7 +56,7 @@ const Signup = () => {
     }
   };
   const handleInputChange = () => {
-    setError(""); // Reset error when user starts typing
+    setError(""); 
   };
   return (
     <div className="flex justify-center items-center flex-col">

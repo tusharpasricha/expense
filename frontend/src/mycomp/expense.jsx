@@ -95,7 +95,7 @@ function Expense({ onExpenseSaved }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            onExpenseSaved(data.savedExpense); // Call the callback to update the list
+            onExpenseSaved(data.savedExpense); 
             setDate(null);
             setSelectedSource("");
             setSelectedCategory("");

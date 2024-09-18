@@ -15,10 +15,7 @@ function Head() {
   const location = useLocation();
   const username = location?.state?.username;
   const handleLogout = () => {
-    // Clear the token from local storage
     localStorage.removeItem("token");
-
-    // Redirect to login page
     navigate("/login");
   };
 
