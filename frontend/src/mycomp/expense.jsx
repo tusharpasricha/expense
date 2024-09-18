@@ -40,6 +40,8 @@ function Expense({ onExpenseSaved }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [amount, setAmount] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(true); 
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -51,8 +53,12 @@ function Expense({ onExpenseSaved }) {
       .then((response) => response.json())
       .then((data) => {
         setSources(data.allSources);
+        setLoading(false);
       })
-      .catch((error) => console.error("Error fetching sources:", error));
+      .catch((error) => {
+        console.error("Error fetching sources:", error)
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -66,8 +72,12 @@ function Expense({ onExpenseSaved }) {
       .then((response) => response.json())
       .then((data) => {
         setCategories(data.allCategories);
+        setLoading(false);
       })
-      .catch((error) => console.error("Error fetching categories:", error));
+      .catch((error) => {
+        console.error("Error fetching categories:", error)
+        setLoading(false);
+      });
   }, []);
 
   const handleSave = () => {
@@ -107,6 +117,10 @@ function Expense({ onExpenseSaved }) {
         .catch((error) => console.error("Error adding expense:", error));
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Card className="dark">

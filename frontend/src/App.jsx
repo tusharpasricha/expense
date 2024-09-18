@@ -22,6 +22,8 @@ function MainPage() {
   const [expenses, setExpenses] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
+  const [loading, setLoading] = useState(true); // Add loading state
+
 
   const isLoggedIn = location?.state?.isLoggedIn;
 
@@ -31,6 +33,7 @@ function MainPage() {
       navigate("/login");
       return;
     }
+    setLoading(true);
 
     fetch("https://spendwiser-backend.vercel.app/api/getAllIncomes", {
       headers: {
@@ -38,8 +41,14 @@ function MainPage() {
       },
     })
       .then((response) => response.json())
-      .then((data) => setIncomes(data.allIncomes))
-      .catch((error) => console.error("Error fetching incomes:", error));
+      .then((data) => {
+        setIncomes(data.allIncomes)
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching incomes:", error)
+        setLoading(false)
+      });
 
     fetch("https://spendwiser-backend.vercel.app/api/getAllExpenses", {
       headers: {
@@ -49,7 +58,7 @@ function MainPage() {
       .then((response) => response.json())
       .then((data) => setExpenses(data.allExpenses))
       .catch((error) => console.error("Error fetching expenses:", error));
-  }, [isLoggedIn, navigate, incomes,expenses]);
+  }, [isLoggedIn, navigate]);
 
   const handleIncomeSaved = (newIncome) => {
     setIncomes((prevIncomes) => [...prevIncomes, newIncome]);
@@ -58,6 +67,11 @@ function MainPage() {
   const handleExpenseSaved = (newExpense) => {
     setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
 
   return (
     <>

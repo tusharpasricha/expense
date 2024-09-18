@@ -33,6 +33,8 @@ function Income({ onIncomeSaved }) {
   const [selectedSource, setSelectedSource] = useState("");
   const [amount, setAmount] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(true); 
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -44,8 +46,12 @@ function Income({ onIncomeSaved }) {
       .then((response) => response.json())
       .then((data) => {
         setSources(data.allSources);
+        setLoading(false)
       })
-      .catch((error) => console.error("Error fetching sources:", error));
+      .catch((error) => {
+        console.error("Error fetching sources:", error)
+        setLoading(false)
+      });
   }, []);
 
   const handleSave = () => {
@@ -73,7 +79,7 @@ function Income({ onIncomeSaved }) {
         .then((data) => {
           if (data.success) {
             console.log("Income added successfully:", data.savedIncome);
-            onIncomeSaved(data.savedIncome); // Call the callback function
+            onIncomeSaved(data.savedIncome); 
           } else {
             console.error("Error adding income:", data.errors);
           }
@@ -81,6 +87,10 @@ function Income({ onIncomeSaved }) {
         .catch((error) => console.error("Error adding income:", error));
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Card className="dark">
